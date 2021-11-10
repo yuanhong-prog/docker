@@ -1,0 +1,23 @@
+## 以alpine镜像为基础镜像进行扩展
+FROM alpine
+
+RUN apk add wget gcc g++ make && cd /opt/ 
+
+
+## 定义 /etc/nginx 与 /usr/share/nginx/html 为挂载目录
+## 不定义也可以正常运行，这里起到提示的作用，提示使用者run时要挂载这两个目录到宿主机
+## 切换目录到 dockerfile 所在目录，run增加 -v 参数, 可进行挂载目录
+## docker run -v $(pwd)/config:/etc/nginx -v $(pwd)/html:/usr/share/nginx/html
+#VOLUME ["/etc/nginx", "/usr/share/nginx/html"]
+
+## 使用RUN在容器内执行命令, 每RUN一次代表镜像会多一层文件，所以尽可能把命令用　& 连接起来，只RUN一次，减少层级
+#RUN echo '<h1>Hello, Docker!</h1>' > /usr/share/nginx/html/index.html
+
+## 拷贝 宿主机的 hello.html 到 容器内的 /usr/share/nginx/html/ 下
+## 可以指定文件用户以及用户组
+## 其中 hello.html 在 build 指定的上下文路径中
+#COPY --chown=nginx:nginx hello.html /usr/share/nginx/html/
+## 容器启动命令
+## 指定前台启动nginx, 如果容器启动命令不是一个持续的，那么在命令结束之后，容器会自动消亡
+#CMD ["nginx", "-g", "daemon off;"]
+
